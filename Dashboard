@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Segmentation Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f0f13;
+            --bg-card: #1c1c24;
+            --primary-purple: #9d4edd;
+            --accent-purple: #e0aaff;
+            --text-main: #f8f9fa;
+            --text-muted: #adb5bd;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .kpi-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            border: 1px solid #2d2d3a;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 4px 20px rgba(157, 78, 221, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-purple);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .kpi-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #2d2d3a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .segments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .segment-card {
+            background-color: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-purple);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .segment-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(157, 78, 221, 0.05));
+            pointer-events: none;
+        }
+
+        .segment-title {
+            font-size: 1.2rem;
+            color: var(--accent-purple);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .segment-share {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .segment-strategy {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .strategy-label {
+            font-weight: bold;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Unlocking Customer Value</h1>
+        <div class="subtitle">Machine Learning CRM Segmentation Portfolio Project</div>
+    </header>
+
+    <div class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-value">24,204</div>
+            <div class="kpi-label">Active Customers</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">K-Means</div>
+            <div class="kpi-label">Algorithm (K=4)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value">> 0.90</div>
+            <div class="kpi-label">RF CV Accuracy</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="chart-container">
+            <h3 style="margin-top: 0; color: var(--accent-purple);">Segment Distribution</h3>
+            <canvas id="segmentChart"></canvas>
+        </div>
+
+        <div class="segments-grid">
+            <div class="segment-card" style="border-left-color: #c77dff;">
+                <h3 class="segment-title">Power Loyalists</h3>
+                <div class="segment-share">30.8%</div>
+                <div class="segment-strategy">
+                    <span class="strategy-label">Strategy:</span> Deepen Relationship & Upsell.<br><br>
+                    Launch a VIP tier with early access, cross-sell adjacent premium categories, and introduce referral rewards.
+                </div>
+            </div>
+
+            <div class="segment-card" style="border-left-color: #9d4edd;">
+                <h3 class="segment-title">Elite Spenders</h3>
+                <div class="segment-share">12.3%</div>
+                <div class="segment-strategy">
+                    <span class="strategy-label">Strategy:</span> Retention & Churn Prevention.<br><br>
+                    Exclusive product previews, early access to seasonal lines, and premium loyalty benefits (3x points).
+                </div>
+            </div>
+
+            <div class="segment-card" style="border-left-color: #7b2cbf;">
+                <h3 class="segment-title">Value Seekers</h3>
+                <div class="segment-share">43.1%</div>
+                <div class="segment-strategy">
+                    <span class="strategy-label">Strategy:</span> Increase Visit Frequency.<br><br>
+                    Bundle offers, personalized reminders after inactivity, and loyalty upgrade incentives.
+                </div>
+            </div>
+
+            <div class="segment-card" style="border-left-color: #5a189a;">
+                <h3 class="segment-title">Sleeping Giants</h3>
+                <div class="segment-share">13.7%</div>
+                <div class="segment-strategy">
+                    <span class="strategy-label">Strategy:</span> Win-Back Reactivation.<br><br>
+                    3-touch reactivation journey: reminder emails, time-limited discount codes, and churn surveys.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('segmentChart').getContext('2d');
+    const segmentChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Value Seekers', 'Power Loyalists', 'Sleeping Giants', 'Elite Spenders'],
+            datasets: [{
+                data: [43.1, 30.8, 13.7, 12.3],
+                backgroundColor: [
+                    '#7b2cbf', // Value Seekers
+                    '#c77dff', // Power Loyalists
+                    '#5a189a', // Sleeping Giants
+                    '#9d4edd'  // Elite Spenders
+                ],
+                borderColor: '#1c1c24',
+                borderWidth: 2,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#adb5bd',
+                        padding: 20,
+                        font: {
+                            family: "'Segoe UI', sans-serif"
+                        }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+</script>
+
+</body>
+</html>
