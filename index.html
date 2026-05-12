@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Segmentation | ML Portfolio</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            /* Palette Dark Tech / Deep Purple */
             --bg-dark: #0f0c1b;
             --bg-card: #191627;
             --primary-purple: #8B5CF6;
@@ -17,6 +17,10 @@
             --text-main: #f8f9fa;
             --text-muted: #9CA3AF;
             --border-color: #2e2942;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -56,6 +60,13 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 500;
+        }
+
+        .method-note {
+            max-width: 850px;
+            margin: 1.5rem auto 0 auto;
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         .kpi-row {
@@ -121,8 +132,25 @@
         }
 
         @media (max-width: 900px) {
-            .charts-container { grid-template-columns: 1fr; }
-            .chart-card.full-width { grid-column: span 1; }
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card.full-width {
+                grid-column: span 1;
+            }
         }
 
         .chart-title {
@@ -134,6 +162,20 @@
             font-weight: 600;
             border-left: 4px solid var(--primary-purple);
             padding-left: 10px;
+        }
+
+        .chart-caption {
+            width: 100%;
+            margin-top: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
         }
 
         .segments-grid {
@@ -149,18 +191,22 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            min-height: 420px;
         }
 
         .segment-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
         }
 
-        .s1::before { background-color: #5b21b6; }
+        .s1::before { background-color: #8b5cf6; }
         .s2::before { background-color: #7c3aed; }
-        .s3::before { background-color: #8b5cf6; }
-        .s4::before { background-color: #c4b5fd; }
+        .s3::before { background-color: #c4b5fd; }
+        .s4::before { background-color: #5b21b6; }
 
         .segment-title {
             font-size: 1.4rem;
@@ -182,20 +228,36 @@
         }
 
         .strategy-label {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--accent-purple);
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             margin-top: 1rem;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
     <header>
         <h1>Customer Value Segmentation</h1>
-        <div class="subtitle">Machine Learning CRM Data App • K-Means & PCA</div>
+        <div class="subtitle">Machine Learning CRM Data App • Gaussian Mixture Model & PCA</div>
+        <p class="method-note">
+            Customer-level behavioral segmentation built from transactional, loyalty and basket data.
+            The final model applies a Gaussian Mixture Model to identify four CRM-ready customer profiles
+            and translate them into targeted marketing actions.
+        </p>
     </header>
 
     <div class="kpi-row">
@@ -203,103 +265,206 @@
             <div class="kpi-value">24,204</div>
             <div class="kpi-label">Active Customers</div>
         </div>
+
         <div class="kpi-card">
-            <div class="kpi-value">K=4</div>
-            <div class="kpi-label">Optimal Clusters</div>
+            <div class="kpi-value">GMM</div>
+            <div class="kpi-label">Selected Model</div>
         </div>
+
         <div class="kpi-card">
-            <div class="kpi-value">> 0.90</div>
-            <div class="kpi-label">Random Forest Acc.</div>
+            <div class="kpi-value">4</div>
+            <div class="kpi-label">CRM-Ready Segments</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-value">27%</div>
+            <div class="kpi-label">Revenue from Premium Buyers</div>
         </div>
     </div>
 
     <div class="charts-container">
-        
+
         <div class="chart-card">
-            <h3 class="chart-title">Customer Distribution (% Base)</h3>
+            <h3 class="chart-title">Customer Base Distribution by Segment</h3>
             <div style="width: 100%; max-width: 350px;">
-                <canvas id="doughnutChart"></canvas>
+                <canvas id="customerBaseChart"></canvas>
             </div>
+            <p class="chart-caption">
+                Percentages represent share of customers, not revenue contribution.
+            </p>
         </div>
 
         <div class="chart-card">
-            <h3 class="chart-title">Behavioral Profiling (Median Normalized)</h3>
+            <h3 class="chart-title">Revenue Distribution by Segment</h3>
+            <div style="width: 100%; max-width: 350px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <p class="chart-caption">
+                Percentages represent revenue contribution, not customer base size.
+            </p>
+        </div>
+
+        <div class="chart-card">
+            <h3 class="chart-title">Behavioral Profiling by Segment</h3>
             <div style="width: 100%; max-width: 450px;">
                 <canvas id="radarChart"></canvas>
             </div>
+            <p class="chart-caption">
+                Values are normalized to compare customer behavior across key CRM dimensions.
+            </p>
         </div>
 
-        <div class="chart-card full-width">
-            <h3 class="chart-title">Top 4 Categories Spend % by Segment</h3>
+        <div class="chart-card">
+            <h3 class="chart-title">Top Category Spend Mix by Segment</h3>
             <div style="width: 100%; height: 350px; position: relative;">
                 <canvas id="barChart"></canvas>
             </div>
+            <p class="chart-caption">
+                Category shares highlight differences in product preferences across customer profiles.
+            </p>
         </div>
 
     </div>
 
-    <h2 style="color: var(--text-main); margin-bottom: 1.5rem; font-size: 1.8rem;">Strategic Activation</h2>
+    <h2 class="section-title">Strategic Activation</h2>
+
     <div class="segments-grid">
-        
-        <div class="segment-card s2">
+
+        <div class="segment-card s1">
             <h3 class="segment-title">Power Loyalists</h3>
             <div class="segment-share">30.8%</div>
+
             <div class="segment-strategy">
-                <span class="strategy-label">Profile Base:</span> Engaged Deal Hunters. Highest basket value among non-premium buyers. High responsiveness.
-                <span class="strategy-label">Action:</span> Deepen Relationship & Upsell. Launch a VIP tier with early access and exclusive events, cross-sell adjacent premium categories, and introduce referral rewards.
+                <span class="strategy-label">Customer Base:</span>
+                A high-value group of engaged customers with strong loyalty behavior, recurring store interaction
+                and relevant basket value.
+
+                <span class="strategy-label">Business Role:</span>
+                They support stable revenue and represent a strong base for relationship expansion,
+                cross-selling and loyalty reinforcement.
+
+                <span class="strategy-label">Recommended Action:</span>
+                Deepen relationship and upsell. Launch a VIP tier with early access, exclusive events,
+                referral rewards and cross-sell opportunities across adjacent premium categories.
+
+                <span class="strategy-label">Suggested KPIs:</span>
+                Average basket growth, cross-sell uptake, referral participation and retention rate.
+            </div>
+        </div>
+
+        <div class="segment-card s2">
+            <h3 class="segment-title">Elite Spenders</h3>
+            <div class="segment-share">12.3%</div>
+
+            <div class="segment-strategy">
+                <span class="strategy-label">Customer Base:</span>
+                Smaller but high-value customer segment with premium-oriented shopping missions,
+                strong basket value and high potential for margin contribution.
+
+                <span class="strategy-label">Business Role:</span>
+                Although they represent a smaller share of customers, they are strategically important because
+                of their disproportionate revenue and premium-category potential.
+
+                <span class="strategy-label">Recommended Action:</span>
+                Retention and churn prevention. Protect this segment through exclusive product previews,
+                early access to seasonal lines and premium loyalty benefits.
+
+                <span class="strategy-label">Suggested KPIs:</span>
+                Churn rate, retention rate, premium-category spend and average order value.
             </div>
         </div>
 
         <div class="segment-card s3">
-            <h3 class="segment-title">Elite Spenders</h3>
-            <div class="segment-share">12.3%</div>
+            <h3 class="segment-title">Value Seekers</h3>
+            <div class="segment-share">43.1%</div>
+
             <div class="segment-strategy">
-                <span class="strategy-label">Profile Base:</span> Premium Card Shoppers. Unmatched basket value (€55.1 median), 5.4 items per basket, high recency.
-                <span class="strategy-label">Action:</span> Retention & Churn Prevention. Protect this segment through exclusive product previews, early access to seasonal lines, and premium loyalty benefits.
+                <span class="strategy-label">Customer Base:</span>
+                Largest customer group. Routine-oriented shoppers with strong relevance for volume growth,
+                but requiring targeted incentives to increase frequency and strengthen engagement.
+
+                <span class="strategy-label">Business Role:</span>
+                This segment represents the biggest opportunity for scalable CRM activation because even small
+                behavioral improvements can generate meaningful business impact.
+
+                <span class="strategy-label">Recommended Action:</span>
+                Increase visit frequency. Use bundle offers, personalized reminders after inactivity,
+                loyalty upgrade incentives and category-based promotions.
+
+                <span class="strategy-label">Suggested KPIs:</span>
+                Visit frequency, campaign response rate, loyalty upgrade conversion and repeat purchase rate.
             </div>
         </div>
 
         <div class="segment-card s4">
-            <h3 class="segment-title">Value Seekers</h3>
-            <div class="segment-share">43.1%</div>
+            <h3 class="segment-title">Sleeping Giants</h3>
+            <div class="segment-share">13.7%</div>
+
             <div class="segment-strategy">
-                <span class="strategy-label">Profile Base:</span> Loyal Veterans. Longest tenure (143 months), moderate spend, high affinity for 'Other Frozen' category.
-                <span class="strategy-label">Action:</span> Increase Visit Frequency. Use bundle offers, personalised reminders after inactivity, and loyalty upgrade incentives.
+                <span class="strategy-label">Customer Base:</span>
+                Disengaged or at-risk customers with lower recent activity and weaker shopping continuity.
+                This segment requires reactivation before value is permanently lost.
+
+                <span class="strategy-label">Business Role:</span>
+                They represent a defensive CRM priority: the goal is to recover inactive customers and understand
+                the reasons behind their drop-off.
+
+                <span class="strategy-label">Recommended Action:</span>
+                Win-back reactivation. Implement a 3-touch reactivation journey combining reminder emails,
+                time-limited discount codes and churn surveys to understand exit reasons.
+
+                <span class="strategy-label">Suggested KPIs:</span>
+                Reactivation rate, voucher redemption, survey response rate and recovered revenue.
             </div>
         </div>
 
-        <div class="segment-card s1">
-            <h3 class="segment-title">Sleeping Giants</h3>
-            <div class="segment-share">13.7%</div>
-            <div class="segment-strategy">
-                <span class="strategy-label">Profile Base:</span> Irregular Cash Shoppers. High recency (30+ days), lowest frequency, high drop-off risk.
-                <span class="strategy-label">Action:</span> Win-Back Reactivation. Implement a 3-touch reactivation journey combining reminder emails, time-limited discount codes, and churn surveys.
-            </div>
-        </div>
-        
     </div>
+
+    <div class="footer-note">
+        Portfolio case study based on CRM segmentation, customer behavioral profiling and targeted marketing activation.
+    </div>
+
 </div>
 
 <script>
-    // Common Chart Defaults
     Chart.defaults.color = '#9CA3AF';
     Chart.defaults.font.family = "'Inter', sans-serif";
 
-    // 1. Doughnut Chart
-    const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
-    new Chart(ctxDoughnut, {
+    const colors = {
+        powerLoyalists: '#8b5cf6',
+        eliteSpenders: '#7c3aed',
+        valueSeekers: '#c4b5fd',
+        sleepingGiants: '#5b21b6',
+        regularShoppers: '#c4b5fd',
+        premiumBuyers: '#7c3aed',
+        churned: '#5b21b6',
+        cardBorder: '#191627',
+        grid: '#2e2942',
+        text: '#f8f9fa',
+        muted: '#9CA3AF'
+    };
+
+    // 1. Customer Base Distribution
+    const ctxCustomerBase = document.getElementById('customerBaseChart').getContext('2d');
+
+    new Chart(ctxCustomerBase, {
         type: 'doughnut',
         data: {
-            labels: ['Value Seekers', 'Power Loyalists', 'Sleeping Giants', 'Elite Spenders'],
+            labels: [
+                'Value Seekers',
+                'Power Loyalists',
+                'Sleeping Giants',
+                'Elite Spenders'
+            ],
             datasets: [{
                 data: [43.1, 30.8, 13.7, 12.3],
                 backgroundColor: [
-                    '#c4b5fd', // Value
-                    '#8b5cf6', // Power
-                    '#5b21b6', // Sleeping
-                    '#7c3aed'  // Elite
+                    colors.valueSeekers,
+                    colors.powerLoyalists,
+                    colors.sleepingGiants,
+                    colors.eliteSpenders
                 ],
-                borderColor: '#191627',
+                borderColor: colors.cardBorder,
                 borderWidth: 4,
                 hoverOffset: 6
             }]
@@ -307,43 +472,120 @@
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'bottom' }
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}% of customer base`;
+                        }
+                    }
+                }
             },
             cutout: '70%'
         }
     });
 
-    // 2. Behavioral Radar Chart
+    // 2. Revenue Distribution
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+
+    new Chart(ctxRevenue, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Regular Shoppers',
+                'Power Loyalists',
+                'Premium Buyers',
+                'Churned'
+            ],
+            datasets: [{
+                data: [40.7, 31.2, 27.0, 1.1],
+                backgroundColor: [
+                    colors.valueSeekers,
+                    colors.powerLoyalists,
+                    colors.eliteSpenders,
+                    colors.sleepingGiants
+                ],
+                borderColor: colors.cardBorder,
+                borderWidth: 4,
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}% of revenue`;
+                        }
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // 3. Behavioral Radar Chart
     const ctxRadar = document.getElementById('radarChart').getContext('2d');
+
     new Chart(ctxRadar, {
         type: 'radar',
         data: {
-            labels: ['Visit Frequency', 'Basket Value', 'Basket Size (Items)', 'Recent Activity', 'Loyalty (Tenure)'],
+            labels: [
+                'Visit Frequency',
+                'Basket Value',
+                'Basket Size',
+                'Recent Activity',
+                'Loyalty / Tenure'
+            ],
             datasets: [
                 {
                     label: 'Elite Spenders',
-                    data: [100, 100, 100, 100, 95], // Normalized
-                    backgroundColor: 'rgba(124, 58, 237, 0.2)',
-                    borderColor: '#7c3aed',
+                    data: [70, 100, 100, 80, 65],
+                    backgroundColor: 'rgba(124, 58, 237, 0.20)',
+                    borderColor: colors.eliteSpenders,
                     borderWidth: 2,
-                    pointBackgroundColor: '#7c3aed'
+                    pointBackgroundColor: colors.eliteSpenders
                 },
                 {
                     label: 'Power Loyalists',
-                    data: [83, 71, 83, 90, 67],
-                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                    borderColor: '#8b5cf6',
+                    data: [90, 75, 80, 90, 85],
+                    backgroundColor: 'rgba(139, 92, 246, 0.20)',
+                    borderColor: colors.powerLoyalists,
                     borderWidth: 2,
-                    pointBackgroundColor: '#8b5cf6'
+                    pointBackgroundColor: colors.powerLoyalists
                 },
                 {
                     label: 'Value Seekers',
-                    data: [77, 40, 46, 85, 100],
-                    backgroundColor: 'transparent',
-                    borderColor: '#c4b5fd',
+                    data: [75, 55, 60, 80, 100],
+                    backgroundColor: 'rgba(196, 181, 253, 0.08)',
+                    borderColor: colors.valueSeekers,
                     borderDash: [5, 5],
                     borderWidth: 2,
-                    pointBackgroundColor: '#c4b5fd'
+                    pointBackgroundColor: colors.valueSeekers
+                },
+                {
+                    label: 'Sleeping Giants',
+                    data: [35, 45, 50, 30, 60],
+                    backgroundColor: 'rgba(91, 33, 182, 0.12)',
+                    borderColor: colors.sleepingGiants,
+                    borderWidth: 2,
+                    pointBackgroundColor: colors.sleepingGiants
                 }
             ]
         },
@@ -351,47 +593,74 @@
             responsive: true,
             scales: {
                 r: {
-                    angleLines: { color: '#2e2942' },
-                    grid: { color: '#2e2942' },
-                    pointLabels: { color: '#f8f9fa', font: { size: 11 } },
-                    ticks: { display: false, min: 0, max: 100 }
+                    min: 0,
+                    max: 100,
+                    angleLines: {
+                        color: colors.grid
+                    },
+                    grid: {
+                        color: colors.grid
+                    },
+                    pointLabels: {
+                        color: colors.text,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        display: false,
+                        stepSize: 20
+                    }
                 }
             },
             plugins: {
-                legend: { position: 'bottom' }
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
+                }
             }
         }
     });
 
-    // 3. Category Spend Bar Chart
+    // 4. Category Spend Mix Bar Chart
     const ctxBar = document.getElementById('barChart').getContext('2d');
+
     new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: ['Ready-Made', 'Other Frozen', 'Fish', 'Vegetables'],
+            labels: [
+                'Ready-Made',
+                'Other Frozen',
+                'Fish',
+                'Vegetables'
+            ],
             datasets: [
                 {
                     label: 'Power Loyalists',
-                    data: [30.4, 14.6, 20.0, 11.7], // Extracted straight from Notebook cluster outputs
-                    backgroundColor: '#8b5cf6',
+                    data: [30.4, 14.6, 20.0, 11.7],
+                    backgroundColor: colors.powerLoyalists,
                     borderRadius: 4
                 },
                 {
                     label: 'Elite Spenders',
                     data: [26.6, 13.4, 18.9, 10.5],
-                    backgroundColor: '#7c3aed',
+                    backgroundColor: colors.eliteSpenders,
                     borderRadius: 4
                 },
                 {
                     label: 'Value Seekers',
                     data: [19.9, 26.2, 21.5, 13.1],
-                    backgroundColor: '#c4b5fd',
+                    backgroundColor: colors.valueSeekers,
                     borderRadius: 4
                 },
                 {
                     label: 'Sleeping Giants',
                     data: [33.9, 19.8, 17.7, 10.0],
-                    backgroundColor: '#5b21b6',
+                    backgroundColor: colors.sleepingGiants,
                     borderRadius: 4
                 }
             ]
@@ -402,15 +671,46 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#2e2942' },
-                    title: { display: true, text: 'Average % Spend', color: '#9CA3AF' }
+                    suggestedMax: 40,
+                    grid: {
+                        color: colors.grid
+                    },
+                    title: {
+                        display: true,
+                        text: 'Average Spend Share (%)',
+                        color: colors.muted
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
                 },
                 x: {
-                    grid: { display: false }
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: colors.muted
+                    }
                 }
             },
             plugins: {
-                legend: { position: 'top' }
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}% average spend share`;
+                        }
+                    }
+                }
             }
         }
     });
