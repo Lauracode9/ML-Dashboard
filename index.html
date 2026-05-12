@@ -191,7 +191,7 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
-            min-height: 420px;
+            min-height: 430px;
         }
 
         .segment-card::before {
@@ -262,8 +262,13 @@
 
     <div class="kpi-row">
         <div class="kpi-card">
+            <div class="kpi-value">25.7K</div>
+            <div class="kpi-label">Registered Customers</div>
+        </div>
+
+        <div class="kpi-card">
             <div class="kpi-value">24,204</div>
-            <div class="kpi-label">Active Customers</div>
+            <div class="kpi-label">Active Customers Analyzed</div>
         </div>
 
         <div class="kpi-card">
@@ -332,11 +337,11 @@
 
         <div class="segment-card s1">
             <h3 class="segment-title">Power Loyalists</h3>
-            <div class="segment-share">30.8%</div>
+            <div class="segment-share">30.8% of customers</div>
 
             <div class="segment-strategy">
-                <span class="strategy-label">Customer Base:</span>
-                A high-value group of engaged customers with strong loyalty behavior, recurring store interaction
+                <span class="strategy-label">Customer Profile:</span>
+                Highly engaged customers with strong loyalty behavior, recurring store interaction
                 and relevant basket value.
 
                 <span class="strategy-label">Business Role:</span>
@@ -353,17 +358,17 @@
         </div>
 
         <div class="segment-card s2">
-            <h3 class="segment-title">Elite Spenders</h3>
-            <div class="segment-share">12.3%</div>
+            <h3 class="segment-title">Premium Buyers</h3>
+            <div class="segment-share">12.3% of customers</div>
 
             <div class="segment-strategy">
-                <span class="strategy-label">Customer Base:</span>
+                <span class="strategy-label">Customer Profile:</span>
                 Smaller but high-value customer segment with premium-oriented shopping missions,
                 strong basket value and high potential for margin contribution.
 
                 <span class="strategy-label">Business Role:</span>
-                Although they represent a smaller share of customers, they are strategically important because
-                of their disproportionate revenue and premium-category potential.
+                Although they represent a smaller share of customers, they generate 27% of total revenue,
+                making them strategically important for profitability and premium-category growth.
 
                 <span class="strategy-label">Recommended Action:</span>
                 Retention and churn prevention. Protect this segment through exclusive product previews,
@@ -375,11 +380,11 @@
         </div>
 
         <div class="segment-card s3">
-            <h3 class="segment-title">Value Seekers</h3>
-            <div class="segment-share">43.1%</div>
+            <h3 class="segment-title">Regular Shoppers</h3>
+            <div class="segment-share">43.1% of customers</div>
 
             <div class="segment-strategy">
-                <span class="strategy-label">Customer Base:</span>
+                <span class="strategy-label">Customer Profile:</span>
                 Largest customer group. Routine-oriented shoppers with strong relevance for volume growth,
                 but requiring targeted incentives to increase frequency and strengthen engagement.
 
@@ -397,11 +402,11 @@
         </div>
 
         <div class="segment-card s4">
-            <h3 class="segment-title">Sleeping Giants</h3>
-            <div class="segment-share">13.7%</div>
+            <h3 class="segment-title">Churned Customers</h3>
+            <div class="segment-share">13.7% of customers</div>
 
             <div class="segment-strategy">
-                <span class="strategy-label">Customer Base:</span>
+                <span class="strategy-label">Customer Profile:</span>
                 Disengaged or at-risk customers with lower recent activity and weaker shopping continuity.
                 This segment requires reactivation before value is permanently lost.
 
@@ -432,12 +437,9 @@
 
     const colors = {
         powerLoyalists: '#8b5cf6',
-        eliteSpenders: '#7c3aed',
-        valueSeekers: '#c4b5fd',
-        sleepingGiants: '#5b21b6',
-        regularShoppers: '#c4b5fd',
         premiumBuyers: '#7c3aed',
-        churned: '#5b21b6',
+        regularShoppers: '#c4b5fd',
+        churnedCustomers: '#5b21b6',
         cardBorder: '#191627',
         grid: '#2e2942',
         text: '#f8f9fa',
@@ -451,18 +453,18 @@
         type: 'doughnut',
         data: {
             labels: [
-                'Value Seekers',
+                'Regular Shoppers',
                 'Power Loyalists',
-                'Sleeping Giants',
-                'Elite Spenders'
+                'Churned Customers',
+                'Premium Buyers'
             ],
             datasets: [{
                 data: [43.1, 30.8, 13.7, 12.3],
                 backgroundColor: [
-                    colors.valueSeekers,
+                    colors.regularShoppers,
                     colors.powerLoyalists,
-                    colors.sleepingGiants,
-                    colors.eliteSpenders
+                    colors.churnedCustomers,
+                    colors.premiumBuyers
                 ],
                 borderColor: colors.cardBorder,
                 borderWidth: 4,
@@ -502,15 +504,15 @@
                 'Regular Shoppers',
                 'Power Loyalists',
                 'Premium Buyers',
-                'Churned'
+                'Churned Customers'
             ],
             datasets: [{
                 data: [40.7, 31.2, 27.0, 1.1],
                 backgroundColor: [
-                    colors.valueSeekers,
+                    colors.regularShoppers,
                     colors.powerLoyalists,
-                    colors.eliteSpenders,
-                    colors.sleepingGiants
+                    colors.premiumBuyers,
+                    colors.churnedCustomers
                 ],
                 borderColor: colors.cardBorder,
                 borderWidth: 4,
@@ -555,12 +557,12 @@
             ],
             datasets: [
                 {
-                    label: 'Elite Spenders',
+                    label: 'Premium Buyers',
                     data: [70, 100, 100, 80, 65],
                     backgroundColor: 'rgba(124, 58, 237, 0.20)',
-                    borderColor: colors.eliteSpenders,
+                    borderColor: colors.premiumBuyers,
                     borderWidth: 2,
-                    pointBackgroundColor: colors.eliteSpenders
+                    pointBackgroundColor: colors.premiumBuyers
                 },
                 {
                     label: 'Power Loyalists',
@@ -571,21 +573,21 @@
                     pointBackgroundColor: colors.powerLoyalists
                 },
                 {
-                    label: 'Value Seekers',
+                    label: 'Regular Shoppers',
                     data: [75, 55, 60, 80, 100],
                     backgroundColor: 'rgba(196, 181, 253, 0.08)',
-                    borderColor: colors.valueSeekers,
+                    borderColor: colors.regularShoppers,
                     borderDash: [5, 5],
                     borderWidth: 2,
-                    pointBackgroundColor: colors.valueSeekers
+                    pointBackgroundColor: colors.regularShoppers
                 },
                 {
-                    label: 'Sleeping Giants',
+                    label: 'Churned Customers',
                     data: [35, 45, 50, 30, 60],
                     backgroundColor: 'rgba(91, 33, 182, 0.12)',
-                    borderColor: colors.sleepingGiants,
+                    borderColor: colors.churnedCustomers,
                     borderWidth: 2,
-                    pointBackgroundColor: colors.sleepingGiants
+                    pointBackgroundColor: colors.churnedCustomers
                 }
             ]
         },
@@ -646,21 +648,21 @@
                     borderRadius: 4
                 },
                 {
-                    label: 'Elite Spenders',
+                    label: 'Premium Buyers',
                     data: [26.6, 13.4, 18.9, 10.5],
-                    backgroundColor: colors.eliteSpenders,
+                    backgroundColor: colors.premiumBuyers,
                     borderRadius: 4
                 },
                 {
-                    label: 'Value Seekers',
+                    label: 'Regular Shoppers',
                     data: [19.9, 26.2, 21.5, 13.1],
-                    backgroundColor: colors.valueSeekers,
+                    backgroundColor: colors.regularShoppers,
                     borderRadius: 4
                 },
                 {
-                    label: 'Sleeping Giants',
+                    label: 'Churned Customers',
                     data: [33.9, 19.8, 17.7, 10.0],
-                    backgroundColor: colors.sleepingGiants,
+                    backgroundColor: colors.churnedCustomers,
                     borderRadius: 4
                 }
             ]
