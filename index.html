@@ -3,48 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Segmentation Dashboard</title>
+    <title>Customer Segmentation | ML Portfolio</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #0f0f13;
-            --bg-card: #1c1c24;
-            --primary-purple: #9d4edd;
-            --accent-purple: #e0aaff;
+            /* Palette Dark Tech / Deep Purple */
+            --bg-dark: #0f0c1b;
+            --bg-card: #191627;
+            --primary-purple: #8B5CF6;
+            --accent-purple: #C4B5FD;
+            --neon-purple: #A78BFA;
+            --dark-purple: #4C1D95;
             --text-main: #f8f9fa;
-            --text-muted: #adb5bd;
+            --text-muted: #9CA3AF;
+            --border-color: #2e2942;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 2rem;
             line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, var(--accent-purple), var(--primary-purple));
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-purple), #d8b4fe, var(--primary-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
         .subtitle {
             color: var(--text-muted);
             font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
         }
 
         .kpi-row {
@@ -58,62 +69,84 @@
         .kpi-card {
             background-color: var(--bg-card);
             padding: 1.5rem 2rem;
-            border-radius: 12px;
-            border: 1px solid #2d2d3a;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
             text-align: center;
-            min-width: 200px;
-            box-shadow: 0 4px 20px rgba(157, 78, 221, 0.1);
-            transition: transform 0.3s ease;
+            min-width: 220px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
         }
 
         .kpi-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary-purple);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
         }
 
         .kpi-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent-purple);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--neon-purple);
+            margin-bottom: 0.2rem;
         }
 
         .kpi-label {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 600;
         }
 
-        .charts-row {
+        .charts-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-bottom: 3rem;
         }
 
-        .chart-container {
+        .chart-card {
             background-color: var(--bg-card);
             padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid #2d2d3a;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-card.full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 900px) {
+            .charts-container { grid-template-columns: 1fr; }
+            .chart-card.full-width { grid-column: span 1; }
+        }
+
+        .chart-title {
+            width: 100%;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-left: 4px solid var(--primary-purple);
+            padding-left: 10px;
         }
 
         .segments-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
         .segment-card {
             background-color: var(--bg-card);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-purple);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
@@ -121,32 +154,39 @@
         .segment-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(157, 78, 221, 0.05));
-            pointer-events: none;
+            top: 0; left: 0; right: 0; height: 4px;
         }
 
+        .s1::before { background-color: #5b21b6; }
+        .s2::before { background-color: #7c3aed; }
+        .s3::before { background-color: #8b5cf6; }
+        .s4::before { background-color: #c4b5fd; }
+
         .segment-title {
-            font-size: 1.2rem;
-            color: var(--accent-purple);
+            font-size: 1.4rem;
+            color: var(--text-main);
             margin-top: 0;
             margin-bottom: 0.5rem;
         }
 
         .segment-share {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--neon-purple);
+            margin-bottom: 1.5rem;
         }
 
         .segment-strategy {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
         }
 
         .strategy-label {
-            font-weight: bold;
-            color: var(--text-main);
+            font-weight: 600;
+            color: var(--accent-purple);
+            display: block;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -154,8 +194,8 @@
 
 <div class="container">
     <header>
-        <h1>Unlocking Customer Value</h1>
-        <div class="subtitle">Machine Learning CRM Segmentation Portfolio Project</div>
+        <h1>Customer Value Segmentation</h1>
+        <div class="subtitle">Machine Learning CRM Data App • K-Means & PCA</div>
     </header>
 
     <div class="kpi-row">
@@ -164,113 +204,146 @@
             <div class="kpi-label">Active Customers</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-value">K-Means</div>
-            <div class="kpi-label">Algorithm (K=4)</div>
+            <div class="kpi-value">K=4</div>
+            <div class="kpi-label">Optimal Clusters</div>
         </div>
         <div class="kpi-card">
             <div class="kpi-value">> 0.90</div>
-            <div class="kpi-label">RF CV Accuracy</div>
+            <div class="kpi-label">Random Forest Acc.</div>
         </div>
     </div>
 
-    <div class="charts-row">
+    <div class="charts-container">
         
-        <div class="chart-container">
-            <h3 style="margin-top: 0; color: var(--accent-purple);">Segment Distribution</h3>
-            <canvas id="segmentChart"></canvas>
+        <div class="chart-card">
+            <h3 class="chart-title">Customer Distribution (% Base)</h3>
+            <div style="width: 100%; max-width: 350px;">
+                <canvas id="doughnutChart"></canvas>
+            </div>
         </div>
 
-        <div class="chart-container">
-            <h3 style="margin-top: 0; color: var(--accent-purple);">Behavioural Radar</h3>
-            <canvas id="radarChart"></canvas>
+        <div class="chart-card">
+            <h3 class="chart-title">Behavioral Profiling (Median Normalized)</h3>
+            <div style="width: 100%; max-width: 450px;">
+                <canvas id="radarChart"></canvas>
+            </div>
         </div>
 
-        <div class="chart-container">
-            <h3 style="margin-top: 0; color: var(--accent-purple);">Registration Channels</h3>
-            <canvas id="barChart"></canvas>
+        <div class="chart-card full-width">
+            <h3 class="chart-title">Top 4 Categories Spend % by Segment</h3>
+            <div style="width: 100%; height: 350px; position: relative;">
+                <canvas id="barChart"></canvas>
+            </div>
         </div>
 
     </div>
 
-    <h2 style="color: var(--text-main); border-bottom: 1px solid #2d2d3a; padding-bottom: 0.5rem;">Segment Profiles & Strategies</h2>
+    <h2 style="color: var(--text-main); margin-bottom: 1.5rem; font-size: 1.8rem;">Strategic Activation</h2>
     <div class="segments-grid">
-        <div class="segment-card" style="border-left-color: #c77dff;">
-            <h3 class="segment-title">Power Loyalists (31.2%)</h3>
+        
+        <div class="segment-card s2">
+            <h3 class="segment-title">Power Loyalists</h3>
+            <div class="segment-share">30.8%</div>
             <div class="segment-strategy">
-                <span class="strategy-label">Profile:</span> High frequency, high points, broad categories, active redeemer.<br><br>
-                <span class="strategy-label">Strategy:</span> Deepen Relationship & Upsell. Launch a VIP tier with early access, cross-sell adjacent premium categories, and introduce referral rewards.
+                <span class="strategy-label">Profile Base:</span> Engaged Deal Hunters. Highest basket value among non-premium buyers. High responsiveness.
+                <span class="strategy-label">Action:</span> Deepen Relationship & Upsell. Launch a VIP tier with early access and exclusive events, cross-sell adjacent premium categories, and introduce referral rewards.
             </div>
         </div>
 
-        <div class="segment-card" style="border-left-color: #9d4edd;">
-            <h3 class="segment-title">Premium Buyers (27%)</h3>
+        <div class="segment-card s3">
+            <h3 class="segment-title">Elite Spenders</h3>
+            <div class="segment-share">12.3%</div>
             <div class="segment-strategy">
-                <span class="strategy-label">Profile:</span> Low frequency, High basket value (1.5x median), Premium categories.<br><br>
-                <span class="strategy-label">Strategy:</span> Retention & Churn Prevention. Exclusive product previews, early access to seasonal lines, and premium loyalty benefits.
+                <span class="strategy-label">Profile Base:</span> Premium Card Shoppers. Unmatched basket value (€55.1 median), 5.4 items per basket, high recency.
+                <span class="strategy-label">Action:</span> Retention & Churn Prevention. Protect this segment through exclusive product previews, early access to seasonal lines, and premium loyalty benefits.
             </div>
         </div>
 
-        <div class="segment-card" style="border-left-color: #7b2cbf;">
-            <h3 class="segment-title">Regular Shoppers (40.7%)</h3>
+        <div class="segment-card s4">
+            <h3 class="segment-title">Value Seekers</h3>
+            <div class="segment-share">43.1%</div>
             <div class="segment-strategy">
-                <span class="strategy-label">Profile:</span> Mid frequency, Moderate basket, Consistent, Moderate loyalty.<br><br>
-                <span class="strategy-label">Strategy:</span> Increase Visit Frequency. Bundle offers, personalized reminders after inactivity, and loyalty upgrade incentives.
+                <span class="strategy-label">Profile Base:</span> Loyal Veterans. Longest tenure (143 months), moderate spend, high affinity for 'Other Frozen' category.
+                <span class="strategy-label">Action:</span> Increase Visit Frequency. Use bundle offers, personalised reminders after inactivity, and loyalty upgrade incentives.
             </div>
         </div>
 
-        <div class="segment-card" style="border-left-color: #5a189a;">
-            <h3 class="segment-title">Churned (1.1%)</h3>
+        <div class="segment-card s1">
+            <h3 class="segment-title">Sleeping Giants</h3>
+            <div class="segment-share">13.7%</div>
             <div class="segment-strategy">
-                <span class="strategy-label">Profile:</span> Very high recency (disengaged), Low frequency, Variable discount.<br><br>
-                <span class="strategy-label">Strategy:</span> Win-Back Reactivation. Implement a 3-touch reactivation journey (reminder emails, time-limited discount codes, surveys).
+                <span class="strategy-label">Profile Base:</span> Irregular Cash Shoppers. High recency (30+ days), lowest frequency, high drop-off risk.
+                <span class="strategy-label">Action:</span> Win-Back Reactivation. Implement a 3-touch reactivation journey combining reminder emails, time-limited discount codes, and churn surveys.
             </div>
         </div>
+        
     </div>
 </div>
 
 <script>
-    // --- 1. Grafico a Ciambella (Segment Distribution) ---
-    const ctxDoughnut = document.getElementById('segmentChart').getContext('2d');
+    // Common Chart Defaults
+    Chart.defaults.color = '#9CA3AF';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // 1. Doughnut Chart
+    const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
     new Chart(ctxDoughnut, {
         type: 'doughnut',
         data: {
-            labels: ['Regular Shoppers', 'Power Loyalists', 'Premium Buyers', 'Churned'],
+            labels: ['Value Seekers', 'Power Loyalists', 'Sleeping Giants', 'Elite Spenders'],
             datasets: [{
-                data: [40.7, 31.2, 27.0, 1.1],
-                backgroundColor: ['#7b2cbf', '#c77dff', '#9d4edd', '#5a189a'],
-                borderColor: '#1c1c24',
-                borderWidth: 2
+                data: [43.1, 30.8, 13.7, 12.3],
+                backgroundColor: [
+                    '#c4b5fd', // Value
+                    '#8b5cf6', // Power
+                    '#5b21b6', // Sleeping
+                    '#7c3aed'  // Elite
+                ],
+                borderColor: '#191627',
+                borderWidth: 4,
+                hoverOffset: 6
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'bottom', labels: { color: '#adb5bd' } }
+                legend: { position: 'bottom' }
             },
-            cutout: '65%'
+            cutout: '70%'
         }
     });
 
-    // --- 2. Grafico Radar (Behavioural Analysis) ---
+    // 2. Behavioral Radar Chart
     const ctxRadar = document.getElementById('radarChart').getContext('2d');
     new Chart(ctxRadar, {
         type: 'radar',
         data: {
-            labels: ['Frequency', 'Basket Value', 'Premium', 'Discount Rate', 'Redemption'],
+            labels: ['Visit Frequency', 'Basket Value', 'Basket Size (Items)', 'Recent Activity', 'Loyalty (Tenure)'],
             datasets: [
                 {
-                    label: 'Power Loyalists',
-                    data: [90, 60, 50, 70, 85],
-                    backgroundColor: 'rgba(199, 125, 255, 0.2)',
-                    borderColor: '#c77dff',
-                    pointBackgroundColor: '#c77dff'
+                    label: 'Elite Spenders',
+                    data: [100, 100, 100, 100, 95], // Normalized
+                    backgroundColor: 'rgba(124, 58, 237, 0.2)',
+                    borderColor: '#7c3aed',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#7c3aed'
                 },
                 {
-                    label: 'Premium Buyers',
-                    data: [30, 95, 90, 40, 40],
-                    backgroundColor: 'rgba(157, 78, 221, 0.2)',
-                    borderColor: '#9d4edd',
-                    pointBackgroundColor: '#9d4edd'
+                    label: 'Power Loyalists',
+                    data: [83, 71, 83, 90, 67],
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#8b5cf6'
+                },
+                {
+                    label: 'Value Seekers',
+                    data: [77, 40, 46, 85, 100],
+                    backgroundColor: 'transparent',
+                    borderColor: '#c4b5fd',
+                    borderDash: [5, 5],
+                    borderWidth: 2,
+                    pointBackgroundColor: '#c4b5fd'
                 }
             ]
         },
@@ -278,46 +351,66 @@
             responsive: true,
             scales: {
                 r: {
-                    angleLines: { color: '#2d2d3a' },
-                    grid: { color: '#2d2d3a' },
-                    pointLabels: { color: '#adb5bd' },
-                    ticks: { display: false }
+                    angleLines: { color: '#2e2942' },
+                    grid: { color: '#2e2942' },
+                    pointLabels: { color: '#f8f9fa', font: { size: 11 } },
+                    ticks: { display: false, min: 0, max: 100 }
                 }
             },
             plugins: {
-                legend: { position: 'bottom', labels: { color: '#adb5bd' } }
+                legend: { position: 'bottom' }
             }
         }
     });
 
-    // --- 3. Grafico a Barre (Registration Channels) ---
+    // 3. Category Spend Bar Chart
     const ctxBar = document.getElementById('barChart').getContext('2d');
     new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: ['Store', 'Member get Member', 'Web', 'Phone'],
-            datasets: [{
-                label: '% of Registrations',
-                data: [50.7, 25.3, 15.0, 9.0], // Dati stimati dalle tue slide
-                backgroundColor: '#9d4edd',
-                borderRadius: 4
-            }]
+            labels: ['Ready-Made', 'Other Frozen', 'Fish', 'Vegetables'],
+            datasets: [
+                {
+                    label: 'Power Loyalists',
+                    data: [30.4, 14.6, 20.0, 11.7], // Extracted straight from Notebook cluster outputs
+                    backgroundColor: '#8b5cf6',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Elite Spenders',
+                    data: [26.6, 13.4, 18.9, 10.5],
+                    backgroundColor: '#7c3aed',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Value Seekers',
+                    data: [19.9, 26.2, 21.5, 13.1],
+                    backgroundColor: '#c4b5fd',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Sleeping Giants',
+                    data: [33.9, 19.8, 17.7, 10.0],
+                    backgroundColor: '#5b21b6',
+                    borderRadius: 4
+                }
+            ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#2d2d3a' },
-                    ticks: { color: '#adb5bd' }
+                    grid: { color: '#2e2942' },
+                    title: { display: true, text: 'Average % Spend', color: '#9CA3AF' }
                 },
                 x: {
-                    grid: { display: false },
-                    ticks: { color: '#adb5bd' }
+                    grid: { display: false }
                 }
             },
             plugins: {
-                legend: { display: false }
+                legend: { position: 'top' }
             }
         }
     });
